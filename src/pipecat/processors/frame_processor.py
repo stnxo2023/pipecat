@@ -5,7 +5,7 @@
 #
 
 import asyncio
-import time
+import inspect
 
 from enum import Enum
 
@@ -37,7 +37,6 @@ class FrameProcessor:
         *,
         name: str | None = None,
         metrics: FrameProcessorMetrics | None = None,
-        sync: bool = True,
         loop: asyncio.AbstractEventLoop | None = None,
         **kwargs,
     ):
@@ -47,7 +46,8 @@ class FrameProcessor:
         self._prev: "FrameProcessor" | None = None
         self._next: "FrameProcessor" | None = None
         self._loop: asyncio.AbstractEventLoop = loop or asyncio.get_running_loop()
-        self._sync = sync
+
+        self._event_handlers: dict = {}
 
         # Clock
         self._clock: BaseClock | None = None
@@ -64,11 +64,8 @@ class FrameProcessor:
 
         # Every processor in Pipecat should only output frames from a single
         # task. This avoid problems like audio overlapping. System frames are
-        # the exception to this rule.
-        #
-        # This create this task.
-        if not self._sync:
-            self.__create_push_task()
+        # the exception to this rule. This create this task.
+        self.__create_push_task()
 
     @property
     def interruptions_allowed(self):
@@ -165,23 +162,39 @@ class FrameProcessor:
         await self.push_frame(error, FrameDirection.UPSTREAM)
 
     async def push_frame(self, frame: Frame, direction: FrameDirection = FrameDirection.DOWNSTREAM):
-        if self._sync or isinstance(frame, SystemFrame):
+        if isinstance(frame, SystemFrame):
             await self.__internal_push_frame(frame, direction)
         else:
             await self.__push_queue.put((frame, direction))
+
+    def event_handler(self, event_name: str):
+        def decorator(handler):
+            self.add_event_handler(event_name, handler)
+            return handler
+
+        return decorator
+
+    def add_event_handler(self, event_name: str, handler):
+        if event_name not in self._event_handlers:
+            raise Exception(f"Event handler {event_name} not registered")
+        self._event_handlers[event_name].append(handler)
+
+    def _register_event_handler(self, event_name: str):
+        if event_name in self._event_handlers:
+            raise Exception(f"Event handler {event_name} already registered")
+        self._event_handlers[event_name] = []
 
     #
     # Handle interruptions
     #
 
     async def _start_interruption(self):
-        if not self._sync:
-            # Cancel the task. This will stop pushing frames downstream.
-            self.__push_frame_task.cancel()
-            await self.__push_frame_task
+        # Cancel the task. This will stop pushing frames downstream.
+        self.__push_frame_task.cancel()
+        await self.__push_frame_task
 
-            # Create a new queue and task.
-            self.__create_push_task()
+        # Create a new queue and task.
+        self.__create_push_task()
 
     async def _stop_interruption(self):
         # Nothing to do right now.
@@ -212,6 +225,16 @@ class FrameProcessor:
                 self.__push_queue.task_done()
             except asyncio.CancelledError:
                 break
+
+    async def _call_event_handler(self, event_name: str, *args, **kwargs):
+        try:
+            for handler in self._event_handlers[event_name]:
+                if inspect.iscoroutinefunction(handler):
+                    await handler(self, *args, **kwargs)
+                else:
+                    handler(self, *args, **kwargs)
+        except Exception as e:
+            logger.exception(f"Exception in event handler {event_name}: {e}")
 
     def __str__(self):
         return self.name

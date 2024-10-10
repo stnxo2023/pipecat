@@ -5,17 +5,17 @@
 #
 
 import asyncio
-
 from concurrent.futures import ThreadPoolExecutor
 
-from pipecat.processors.frame_processor import FrameDirection, FrameProcessor
+from loguru import logger
+
 from pipecat.frames.frames import (
     BotInterruptionFrame,
     CancelFrame,
-    InputAudioRawFrame,
-    StartFrame,
     EndFrame,
     Frame,
+    InputAudioRawFrame,
+    StartFrame,
     StartInterruptionFrame,
     StopInterruptionFrame,
     SystemFrame,
@@ -23,19 +23,22 @@ from pipecat.frames.frames import (
     UserStoppedSpeakingFrame,
     VADParamsUpdateFrame,
 )
+from pipecat.processors.frame_processor import FrameDirection, FrameProcessor
 from pipecat.transports.base_transport import TransportParams
 from pipecat.vad.vad_analyzer import VADAnalyzer, VADState
-
-from loguru import logger
 
 
 class BaseInputTransport(FrameProcessor):
     def __init__(self, params: TransportParams, **kwargs):
-        super().__init__(sync=False, **kwargs)
+        super().__init__(**kwargs)
 
         self._params = params
 
         self._executor = ThreadPoolExecutor(max_workers=5)
+
+        # Task to process incoming audio (VAD) and push audio frames downstream
+        # if passthrough is enabled.
+        self._audio_task = None
 
     async def start(self, frame: StartFrame):
         # Create audio input queue and task if needed.
@@ -45,16 +48,17 @@ class BaseInputTransport(FrameProcessor):
 
     async def stop(self, frame: EndFrame):
         # Cancel and wait for the audio input task to finish.
-        if self._params.audio_in_enabled or self._params.vad_enabled:
+        if self._audio_task and (self._params.audio_in_enabled or self._params.vad_enabled):
             self._audio_task.cancel()
             await self._audio_task
+            self._audio_task = None
 
     async def cancel(self, frame: CancelFrame):
-        # Cancel all the tasks and wait for them to finish.
-
-        if self._params.audio_in_enabled or self._params.vad_enabled:
+        # Cancel and wait for the audio input task to finish.
+        if self._audio_task and (self._params.audio_in_enabled or self._params.vad_enabled):
             self._audio_task.cancel()
             await self._audio_task
+            self._audio_task = None
 
     def vad_analyzer(self) -> VADAnalyzer | None:
         return self._params.vad_analyzer
@@ -82,6 +86,7 @@ class BaseInputTransport(FrameProcessor):
         elif isinstance(frame, BotInterruptionFrame):
             logger.debug("Bot interruption")
             await self._start_interruption()
+            await self.push_frame(StartInterruptionFrame())
         # All other system frames
         elif isinstance(frame, SystemFrame):
             await self.push_frame(frame, direction)

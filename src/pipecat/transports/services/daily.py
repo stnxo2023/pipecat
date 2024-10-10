@@ -35,6 +35,7 @@ from pipecat.frames.frames import (
     StartFrame,
     TranscriptionFrame,
     TransportMessageFrame,
+    TransportMessageUrgentFrame,
     UserImageRawFrame,
     UserImageRequestFrame,
 )
@@ -67,6 +68,11 @@ VAD_RESET_PERIOD_MS = 2000
 
 @dataclass
 class DailyTransportMessageFrame(TransportMessageFrame):
+    participant_id: str | None = None
+
+
+@dataclass
+class DailyTransportMessageUrgentFrame(TransportMessageUrgentFrame):
     participant_id: str | None = None
 
 
@@ -234,12 +240,12 @@ class DailyTransportClient(EventHandler):
     def set_callbacks(self, callbacks: DailyCallbacks):
         self._callbacks = callbacks
 
-    async def send_message(self, frame: TransportMessageFrame):
+    async def send_message(self, frame: TransportMessageFrame | TransportMessageUrgentFrame):
         if not self._client:
             return
 
         participant_id = None
-        if isinstance(frame, DailyTransportMessageFrame):
+        if isinstance(frame, (DailyTransportMessageFrame, DailyTransportMessageUrgentFrame)):
             participant_id = frame.participant_id
 
         future = self._loop.create_future()
@@ -575,6 +581,9 @@ class DailyInputTransport(BaseInputTransport):
         self._client = client
 
         self._video_renderers = {}
+
+        # Task that gets audio data from a device or the network and queues it
+        # internally to be processed.
         self._audio_in_task = None
 
         self._vad_analyzer: VADAnalyzer | None = params.vad_analyzer
@@ -603,6 +612,7 @@ class DailyInputTransport(BaseInputTransport):
         if self._audio_in_task and (self._params.audio_in_enabled or self._params.vad_enabled):
             self._audio_in_task.cancel()
             await self._audio_in_task
+            self._audio_in_task = None
 
     async def cancel(self, frame: CancelFrame):
         # Parent stop.
@@ -613,6 +623,7 @@ class DailyInputTransport(BaseInputTransport):
         if self._audio_in_task and (self._params.audio_in_enabled or self._params.vad_enabled):
             self._audio_in_task.cancel()
             await self._audio_in_task
+            self._audio_in_task = None
 
     async def cleanup(self):
         await super().cleanup()
@@ -731,7 +742,7 @@ class DailyOutputTransport(BaseOutputTransport):
         await super().cleanup()
         await self._client.cleanup()
 
-    async def send_message(self, frame: TransportMessageFrame):
+    async def send_message(self, frame: TransportMessageFrame | TransportMessageUrgentFrame):
         await self._client.send_message(frame)
 
     async def send_metrics(self, frame: MetricsFrame):
