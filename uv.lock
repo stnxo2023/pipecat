@@ -499,6 +499,15 @@ wheels = [
 ]
 
 [[package]]
+name = "backports-asyncio-runner"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8e/ff/70dca7d7cb1cbc0edb2c6cc0c38b65cba36cccc491eca64cabd5fe7f8670/backports_asyncio_runner-1.2.0.tar.gz", hash = "sha256:a5aa7b2b7d8f8bfcaa2b57313f70792df84e32a2a746f585213373f900b42162", size = 69893, upload-time = "2025-07-02T02:27:15.685Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/59/76ab57e3fe74484f48a53f8e337171b4a2349e506eabe136d7e01d059086/backports_asyncio_runner-1.2.0-py3-none-any.whl", hash = "sha256:0da0a936a8aeb554eccb426dc55af3ba63bcdc69fa1a600b5bb305413a4477b5", size = 12313, upload-time = "2025-07-02T02:27:14.263Z" },
+]
+
+[[package]]
 name = "blake3"
 version = "1.0.5"
 source = { registry = "https://pypi.org/simple" }
@@ -1218,13 +1227,13 @@ wheels = [
 
 [[package]]
 name = "daily-python"
-version = "0.19.6"
+version = "0.19.7"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4a/73/74a313e6557a6f4da153b38f3feb5b9e4012268322976c79495ce2f228ec/daily_python-0.19.6-cp37-abi3-macosx_10_15_x86_64.whl", hash = "sha256:d35d181f9ba824b62ca531449b237dc9aa771e69c00205a6efa359c371208ee6", size = 13687145, upload-time = "2025-08-02T01:56:51.197Z" },
-    { url = "https://files.pythonhosted.org/packages/bb/ad/fe2f81fc516851200ffec75f8ce44f631b85c9bc5bbdf9f6637f0823e99a/daily_python-0.19.6-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:826342ee863086bb7192230615e26920700706ea79824f7028305f084e18d2e9", size = 12045258, upload-time = "2025-08-02T01:56:53.38Z" },
-    { url = "https://files.pythonhosted.org/packages/22/0e/52aa355208d015134c88055ed53eed83452204590ac20ee2dcd1d6b4fa95/daily_python-0.19.6-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:6ff87c59e677c04c33e46963517e566a77fba425e9d52048418db4e037c6a1d6", size = 14066192, upload-time = "2025-08-02T01:56:55.669Z" },
-    { url = "https://files.pythonhosted.org/packages/32/a0/cab8d478c5ae576bc607431a4d8d9e5a0aae831c096cf833ba2aa1535501/daily_python-0.19.6-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:d15bf8657105a92ddbc88da4dd5bded88075cdf2bc33552406b93f586fdaeced", size = 14575791, upload-time = "2025-08-02T01:56:57.983Z" },
+    { url = "https://files.pythonhosted.org/packages/64/b3/fa69e78338b294cfca5b96dabb3b95220cb990c82d14e79d9380514c6daa/daily_python-0.19.7-cp37-abi3-macosx_10_15_x86_64.whl", hash = "sha256:86b4115720a2e8219eb2ccdc5a6b9b30a3c4eb5eaa772d54bab8f70892714473", size = 13692618, upload-time = "2025-08-14T06:24:45.687Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/1f/ccfb155285dd5d9607a6a44dca22226de28b2b3cfc9ee40681cb801d72e7/daily_python-0.19.7-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:0c4f8104b200a59f4af52b9bcbcab4d5133deef4319093fd338e6e48b79be51d", size = 12047173, upload-time = "2025-08-14T06:24:47.812Z" },
+    { url = "https://files.pythonhosted.org/packages/61/a2/af0243049c2782cdbb4e781a1ca2cd39bc7a062d9b088630e4bd6da0777b/daily_python-0.19.7-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:6c3127ae1f6ca666cc4f663020e273e2b0db1836d628cb073070bf759d46a871", size = 14110897, upload-time = "2025-08-14T06:24:49.693Z" },
+    { url = "https://files.pythonhosted.org/packages/12/22/f3d5063eaad06f2989474360f9c50588190ed89df5c886caa11972f7badb/daily_python-0.19.7-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:7dcb67eafe1b50a605e2384159520d5794233b7f5b27081e137fbbaca1a785e2", size = 14582931, upload-time = "2025-08-14T06:24:51.542Z" },
 ]
 
 [[package]]
@@ -4405,7 +4414,7 @@ requires-dist = [
     { name = "azure-cognitiveservices-speech", marker = "extra == 'azure'", specifier = "~=1.42.0" },
     { name = "cartesia", marker = "extra == 'cartesia'", specifier = "~=2.0.3" },
     { name = "coremltools", marker = "extra == 'local-smart-turn'", specifier = ">=8.0" },
-    { name = "daily-python", marker = "extra == 'daily'", specifier = "~=0.19.6" },
+    { name = "daily-python", marker = "extra == 'daily'", specifier = "~=0.19.7" },
     { name = "deepgram-sdk", marker = "extra == 'deepgram'", specifier = "~=4.7.0" },
     { name = "docstring-parser", specifier = "~=0.16" },
     { name = "einops", marker = "extra == 'moondream'", specifier = "~=0.8.0" },
@@ -4497,7 +4506,7 @@ dev = [
     { name = "pyright", specifier = "~=1.1.402" },
     { name = "pytest", specifier = "~=8.4.1" },
     { name = "pytest-aiohttp", specifier = "==1.1.0" },
-    { name = "pytest-asyncio", specifier = "~=1.0.0" },
+    { name = "pytest-asyncio", specifier = "~=1.1.0" },
     { name = "python-dotenv", specifier = ">=1.0.1,<2.0.0" },
     { name = "ruff", specifier = "~=0.12.1" },
     { name = "setuptools", specifier = "~=78.1.1" },
@@ -5327,14 +5336,15 @@ wheels = [
 
 [[package]]
 name = "pytest-asyncio"
-version = "1.0.0"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "backports-asyncio-runner", marker = "python_full_version < '3.11'" },
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d0/d4/14f53324cb1a6381bef29d698987625d80052bb33932d8e7cbf9b337b17c/pytest_asyncio-1.0.0.tar.gz", hash = "sha256:d15463d13f4456e1ead2594520216b225a16f781e144f8fdf6c5bb4667c48b3f", size = 46960, upload-time = "2025-05-26T04:54:40.484Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4e/51/f8794af39eeb870e87a8c8068642fc07bce0c854d6865d7dd0f2a9d338c2/pytest_asyncio-1.1.0.tar.gz", hash = "sha256:796aa822981e01b68c12e4827b8697108f7205020f24b5793b3c41555dab68ea", size = 46652, upload-time = "2025-07-16T04:29:26.393Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/05/ce271016e351fddc8399e546f6e23761967ee09c8c568bbfbecb0c150171/pytest_asyncio-1.0.0-py3-none-any.whl", hash = "sha256:4f024da9f1ef945e680dc68610b52550e36590a67fd31bb3b4943979a1f90ef3", size = 15976, upload-time = "2025-05-26T04:54:39.035Z" },
+    { url = "https://files.pythonhosted.org/packages/c7/9d/bf86eddabf8c6c9cb1ea9a869d6873b46f105a5d292d3a6f7071f5b07935/pytest_asyncio-1.1.0-py3-none-any.whl", hash = "sha256:5fe2d69607b0bd75c656d1211f969cadba035030156745ee09e7d71740e58ecf", size = 15157, upload-time = "2025-07-16T04:29:24.929Z" },
 ]
 
 [[package]]
